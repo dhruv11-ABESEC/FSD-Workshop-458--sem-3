@@ -1,14 +1,12 @@
 {
-  "name": "lab3",
+  "name": "assignment4-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "httpServer.js",
+  "type": "module",
   "scripts": {
-    "start": "node httpServer.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node assignment4.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module"
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  }
 }
