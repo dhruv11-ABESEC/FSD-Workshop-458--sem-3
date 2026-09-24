@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
+
 const app = express();
 
-// Middleware to read JSON data
 app.use(cors());
 app.use(express.json());
 
@@ -43,6 +43,7 @@ app.post("/create", (req, res) => {
         });
 
     } catch (err) {
+
         console.error("Error:", err.message);
 
         res.status(500).json({
@@ -51,6 +52,7 @@ app.post("/create", (req, res) => {
     }
 });
 
+// Start server
 app.listen(3000, () => {
     console.log("Server is running on port 3000");
 });
