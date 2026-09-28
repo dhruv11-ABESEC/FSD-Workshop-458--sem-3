@@ -1,77 +1,30 @@
-import { useState } from "react";
+/*mport Postman from "../CustomPostman/Postman";
 
 function App() {
+    return <Postman />;
+}
 
-  const [id, setId] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+export default App;
+*/
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+import { Routes, Route } from "react-router-dom";
 
-    const response = await fetch("http://localhost:3000/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        id: Number(id),
-        name: name,
-        email: email
-      })
-    });
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import NewUser from "./pages/NewUser";
+import Dashboard from "./pages/Dashboard";
 
-    const data = await response.json();
-
-    console.log(data);
-
-    alert("User created successfully!");
-
-    setId("");
-    setName("");
-    setEmail("");
-  };
-
+function App() {
   return (
-    <div>
-      <h1>User Form</h1>
+    <Routes>
+      <Route path="/" element={<Home />} />
 
-      <form onSubmit={handleSubmit}>
+      <Route path="/login" element={<Login />} />
 
-        <label>ID:</label>
-        <br />
-        <input
-          type="number"
-          value={id}
-          onChange={(e) => setId(e.target.value)}
-        />
+      <Route path="/newuser" element={<NewUser />} />
 
-        <br /><br />
-
-        <label>Name:</label>
-        <br />
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-
-        <br /><br />
-
-        <label>Email:</label>
-        <br />
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <br /><br />
-
-        <button type="submit">Submit</button>
-
-      </form>
-    </div>
+      <Route path="/dashboard" element={<Dashboard />} />
+    </Routes>
   );
 }
 
