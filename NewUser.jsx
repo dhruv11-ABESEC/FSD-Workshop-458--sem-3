@@ -10,10 +10,12 @@ function NewUser() {
   const navigate = useNavigate();
 
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
 
     e.preventDefault();
 
+
+    // Check empty fields
     if (
       username === "" ||
       email === "" ||
@@ -23,10 +25,69 @@ function NewUser() {
       return;
     }
 
-    localStorage.setItem("username", username);
-    localStorage.setItem("email", email);
 
-    navigate("/dashboard");
+    try {
+
+      // Send data to backend
+      const response = await fetch(
+        "http://localhost:3000/signup",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            username: username,
+            email: email,
+            password: password
+          })
+        }
+      );
+
+
+      const data = await response.json();
+
+
+      // If signup failed
+      if (!response.ok) {
+
+        alert(data.message);
+
+        return;
+      }
+
+
+      // Save username and email
+      localStorage.setItem(
+        "username",
+        username
+      );
+
+      localStorage.setItem(
+        "email",
+        email
+      );
+
+
+      alert("Account created successfully!");
+
+
+      // Go to dashboard
+      navigate("/dashboard");
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Cannot connect to backend server"
+      );
+
+    }
+
   };
 
 
@@ -39,15 +100,18 @@ function NewUser() {
           ← Back to Home
         </Link>
 
+
         <div className="auth-content">
 
           <div className="auth-logo">
             ◆ MyPortal
           </div>
 
+
           <h1>
             Create <span>Account</span>
           </h1>
+
 
           <p className="auth-description">
             Enter your details to create your new account.
@@ -56,7 +120,11 @@ function NewUser() {
 
           <form onSubmit={handleRegister}>
 
-            <label>Username</label>
+            {/* Username */}
+
+            <label>
+              Username
+            </label>
 
             <div className="input-box">
 
@@ -74,7 +142,11 @@ function NewUser() {
             </div>
 
 
-            <label>Email</label>
+            {/* Email */}
+
+            <label>
+              Email
+            </label>
 
             <div className="input-box">
 
@@ -92,7 +164,11 @@ function NewUser() {
             </div>
 
 
-            <label>Password</label>
+            {/* Password */}
+
+            <label>
+              Password
+            </label>
 
             <div className="input-box">
 
@@ -110,7 +186,12 @@ function NewUser() {
             </div>
 
 
-            <button className="auth-button" type="submit">
+            {/* Submit */}
+
+            <button
+              className="auth-button"
+              type="submit"
+            >
               Create Account
             </button>
 
