@@ -1,58 +1,106 @@
 import express from "express";
 import cors from "cors";
+import fs from "fs";
 
 const app = express();
 
+const PORT = 3000;
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-const userData = [
-    {
-        id: 101,
-        name: "Abc",
-        email: "cm@abes.call.in"
-    }
-];
 
-// GET route
-app.get("/msg", (req, res) => {
-    res.status(200).json({
-        message: "welcome user"
+// ================================
+// HOME
+// ================================
+
+app.get("/", (req, res) => {
+  res.send("Backend server is running");
+});
+
+
+// ================================
+// SIGNUP
+// ================================
+
+app.post("/signup", (req, res) => {
+
+  const { username, email, password } = req.body;
+
+  // Check all details
+  if (!username || !email || !password) {
+    return res.status(400).json({
+      message: "Please enter all details"
     });
-});
+  }
 
-// POST route
-app.post("/create", (req, res) => {
 
-    try {
-        const { id, name, email } = req.body;
+  // Read existing signup data
+  let users = [];
 
-        const newUser = {
-            id,
-            name,
-            email
-        };
+  if (fs.existsSync("./signup.json")) {
 
-        userData.push(newUser);
+    const data = fs.readFileSync(
+      "./signup.json",
+      "utf-8"
+    );
 
-        console.log("New User:", newUser);
-
-        res.status(201).json({
-            message: "User created successfully",
-            user: newUser
-        });
-
-    } catch (err) {
-
-        console.error("Error:", err.message);
-
-        res.status(500).json({
-            message: "Server error"
-        });
+    if (data) {
+      users = JSON.parse(data);
     }
+  }
+
+
+  // Check if email already exists
+  const existingUser = users.find(
+    (user) => user.email === email
+  );
+
+  if (existingUser) {
+    return res.status(400).json({
+      message: "Email already registered"
+    });
+  }
+
+
+  // Create new user
+  const newUser = {
+    id: users.length + 1,
+    username: username,
+    email: email,
+    password: password
+  };
+
+
+  // Add user
+  users.push(newUser);
+
+
+  // Save to signup.json
+  fs.writeFileSync(
+    "./signup.json",
+    JSON.stringify(users, null, 2)
+  );
+
+
+  // Send response to frontend
+  res.status(201).json({
+    message: "Account created successfully",
+    user: {
+      id: newUser.id,
+      username: newUser.username,
+      email: newUser.email
+    }
+  });
+
 });
 
-// Start server
-app.listen(3000, () => {
-    console.log("Server is running on port 3000");
+
+// ================================
+// SERVER
+// ================================
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
