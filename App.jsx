@@ -1,31 +1,101 @@
-/*mport Postman from "../CustomPostman/Postman";
+import { useEffect, useState } from "react";
+
+import StudentForm from "./components/StudentForm";
+import StudentList from "./components/StudentList";
+import SearchStudent from "./components/SearchStudent";
+
+import "./App.css";
 
 function App() {
-    return <Postman />;
-}
 
-export default App;
-*/
+    const [students, setStudents] = useState([]);
+    const [selectedStudent, setSelectedStudent] = useState(null);
+    const [search, setSearch] = useState("");
 
-import { Routes, Route } from "react-router-dom";
+    const fetchStudents = async () => {
 
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import NewUser from "./pages/NewUser";
-import Dashboard from "./pages/Dashboard";
+        const response = await fetch(
+            "http://localhost:3000/api/students"
+        );
 
-function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<Home />} />
+        const data = await response.json();
 
-      <Route path="/login" element={<Login />} />
+        setStudents(data);
+    };
 
-      <Route path="/newuser" element={<NewUser />} />
+    useEffect(() => {
+        fetchStudents();
+    }, []);
 
-      <Route path="/dashboard" element={<Dashboard />} />
-    </Routes>
-  );
+    const handleDelete = async (id) => {
+
+        const confirmDelete = window.confirm(
+            "Are you sure you want to delete this student?"
+        );
+
+        if (!confirmDelete) {
+            return;
+        }
+
+        const response = await fetch(
+            `http://localhost:3000/api/students/${id}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        const data = await response.json();
+
+        alert(data.message);
+
+        fetchStudents();
+    };
+
+    const handleEdit = (student) => {
+
+        setSelectedStudent(student);
+    };
+
+    const filteredStudents = students.filter((student) => {
+
+        return (
+            student.name.toLowerCase().includes(search.toLowerCase()) ||
+            String(student.id).includes(search)
+        );
+
+    });
+
+    return (
+
+        <div className="container">
+
+            <h1>Student Management System</h1>
+
+            <StudentForm
+                selectedStudent={selectedStudent}
+                onSuccess={() => {
+                    setSelectedStudent(null);
+                    fetchStudents();
+                }}
+            />
+
+            <hr />
+
+            <SearchStudent
+                search={search}
+                setSearch={setSearch}
+            />
+
+            <h2>All Students</h2>
+
+            <StudentList
+                students={filteredStudents}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+            />
+
+        </div>
+    );
 }
 
 export default App;
